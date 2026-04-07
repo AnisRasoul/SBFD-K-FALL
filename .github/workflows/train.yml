@@ -125,44 +125,58 @@ jobs:
           
           EOF
 
-      # ── 7. Train models ────────────────────────────────────────────────────
-      - name: Train fall-detection models
-        run: python train.py
-
-      # ── 8. Build CML report and post it as a commit/PR comment ────────────
-      - name: Create CML report
-        env:
-          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # ── 7. Upload processed dataset to repository ───────────────────────────
+      - name: Upload dataset to repository
         run: |
-          echo "## 🤖 Fall Detection — Training Results (K-FALL Dataset)" > report.md
-          echo "" >> report.md
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Add all processed data files
+          git add data/
+          
+          # Check if there are changes to commit
+          if git diff --cached --quiet; then
+            echo "No dataset changes to commit"
+          else
+            git commit -m "chore: add K-FALL dataset (auto-downloaded from Kaggle)"
+            git push origin HEAD:${{ github.ref }}
+            echo "✓ Dataset uploaded to repository"
+          fi
 
-          echo "### 📊 Metrics" >> report.md
-          echo '```' >> report.md
-          cat metrics.txt >> report.md
-          echo '```' >> report.md
-          echo "" >> report.md
+      # ── COMMENTED OUT: Training Pipeline ───────────────────────────────────
+      # The following steps are commented out until dataset upload is verified.
+      # Uncomment when ready to enable model training.
+      
+      # - name: Train fall-detection models
+      #   run: python train.py
 
-          echo "### 🟦 Confusion Matrices" >> report.md
-          cml publish confusion_matrices.png --md >> report.md
-          echo "" >> report.md
-
-          echo "### 📈 Training History (Neural Network)" >> report.md
-          cml publish training_history.png --md >> report.md
-          echo "" >> report.md
-
-          echo "### 🌲 Feature Importance (Random Forest)" >> report.md
-          cml publish feature_importance.png --md >> report.md
-          echo "" >> report.md
-
-          echo "### ℹ️ Evaluation Methodology" >> report.md
-          echo "- **Dataset**: K-FALL (Kaggle usmanabbasi2002/kfall-dataset)" >> report.md
-          echo "- **Split**: Group-aware (whole trials to train or test — no subject leakage)" >> report.md
-          echo "- **Threshold**: \`${THRESHOLD:-0.35}\` — tuned for high recall / safety" >> report.md
-          echo "- **BestF1Thr**: threshold that maximises F1 on the test set (informational)" >> report.md
-          echo "" >> report.md
-
-          echo "---" >> report.md
-          echo "_Report generated automatically by [CML](https://cml.dev) on commit \`${{ github.sha }}\`._" >> report.md
-
-          cml comment create report.md
+      # - name: Create CML report
+      #   env:
+      #     REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     echo "## 🤖 Fall Detection — Training Results (K-FALL Dataset)" > report.md
+      #     echo "" >> report.md
+      #     echo "### 📊 Metrics" >> report.md
+      #     echo '```' >> report.md
+      #     cat metrics.txt >> report.md
+      #     echo '```' >> report.md
+      #     echo "" >> report.md
+      #     echo "### 🟦 Confusion Matrices" >> report.md
+      #     cml publish confusion_matrices.png --md >> report.md
+      #     echo "" >> report.md
+      #     echo "### 📈 Training History (Neural Network)" >> report.md
+      #     cml publish training_history.png --md >> report.md
+      #     echo "" >> report.md
+      #     echo "### 🌲 Feature Importance (Random Forest)" >> report.md
+      #     cml publish feature_importance.png --md >> report.md
+      #     echo "" >> report.md
+      #     echo "### ℹ️ Evaluation Methodology" >> report.md
+      #     echo "- **Dataset**: K-FALL (Kaggle usmanabbasi2002/kfall-dataset)" >> report.md
+      #     echo "- **Split**: Group-aware (whole trials to train or test — no subject leakage)" >> report.md
+      #     echo "- **Threshold**: \`${THRESHOLD:-0.35}\` — tuned for high recall / safety" >> report.md
+      #     echo "- **BestF1Thr**: threshold that maximises F1 on the test set (informational)" >> report.md
+      #     echo "" >> report.md
+      #     echo "---" >> report.md
+      #     echo "_Report generated automatically by [CML](https://cml.dev) on commit \`${{ github.sha }}\`._" >> report.md
+      #     cml comment create report.md
