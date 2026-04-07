@@ -59,7 +59,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No dataset changes to commit"
           else
-            TARGET_BRANCH="${GITHUB_REF_NAME}"
+            TARGET_BRANCH="${GITHUB_REF_NAME:-${GITHUB_REF#refs/heads/}}"
             if [ -z "${TARGET_BRANCH}" ] || [ "${TARGET_BRANCH}" = "HEAD" ]; then
               echo "ERROR: Unable to resolve target branch for push"
               exit 1
