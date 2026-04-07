@@ -33,7 +33,7 @@ git push -u origin main
 
 When you push to any branch, GitHub Actions automatically:
 1. **Downloads** the K-FALL dataset directly from Kaggle (no local upload needed!)
-2. **Extracts** the dataset in CI
+2. **Extracts** the dataset in the CI
 3. **Commits and pushes** dataset updates to this repository under `dataset/kfall/`
 
 ### 4. Monitor Dataset Sync
