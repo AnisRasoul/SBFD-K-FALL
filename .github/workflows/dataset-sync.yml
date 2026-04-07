@@ -16,6 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          # Uses PAT so dataset-sync commits can be pushed with your repository token policy.
           token: ${{ secrets.PAT }}
 
       - name: Download K-FALL Dataset from Kaggle
@@ -50,6 +51,6 @@ jobs:
             echo "No dataset changes to commit"
           else
             git commit -m "chore: add K-FALL dataset (auto-downloaded from Kaggle)"
-            git push origin HEAD:${{ github.ref_name }}
+            git push origin HEAD:${{ github.ref }}
             echo "✓ Dataset uploaded to repository"
           fi
