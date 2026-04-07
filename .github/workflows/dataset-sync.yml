@@ -16,7 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # Uses PAT so dataset-sync commits can be pushed with your repository token policy.
+          # Uses a Personal Access Token (PAT) per repository setup so this workflow can push dataset commits.
           token: ${{ secrets.PAT }}
 
       - name: Download K-FALL Dataset from Kaggle
@@ -50,7 +50,8 @@ jobs:
           if git diff --cached --quiet; then
             echo "No dataset changes to commit"
           else
+            CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
             git commit -m "chore: add K-FALL dataset (auto-downloaded from Kaggle)"
-            git push origin HEAD:${{ github.ref_name }}
+            git push origin HEAD:${CURRENT_BRANCH}
             echo "✓ Dataset uploaded to repository"
           fi
