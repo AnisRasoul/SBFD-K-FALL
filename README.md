@@ -6,9 +6,7 @@ This repository contains:
 - **train.py** — Training script for fall detection models (Random Forest, Simple NN, LSTM)
 - **CI/CD Pipeline** — GitHub Actions workflow that automatically:
   - Downloads the K-FALL dataset from Kaggle on GitHub's servers
-  - Processes it into the required format
-  - Trains all models
-  - Generates CML reports with metrics and visualizations
+  - Re-uploads the extracted dataset into this repository under `dataset/kfall/`
 
 ## Quick Start
 
@@ -35,26 +33,18 @@ git push -u origin main
 
 When you push to any branch, GitHub Actions automatically:
 1. **Downloads** the K-FALL dataset directly from Kaggle (no local upload needed!)
-2. **Processes** the dataset into the required CSV structure
-3. **Trains** three models:
-   - Random Forest (200 trees, depth-15)
-   - Simple Neural Network (MLP)
-   - LSTM (sequence model)
-4. **Posts** a detailed CML report to your PR/commit with:
-   - Confusion matrices
-   - Training curves
-   - Feature importance
-   - Performance metrics (accuracy, F1, recall, precision, ROC-AUC)
+2. **Extracts** the dataset in the CI
+3. **Commits and pushes** dataset updates to this repository under `dataset/kfall/`
 
-### 4. Monitor Training
+### 4. Monitor Dataset Sync
 
-Open the **Actions** tab in your GitHub repository to see real-time progress, or view the CML report in the PR/commit comments.
+Open the **Actions** tab in your GitHub repository to see real-time dataset sync progress.
 
 ## Dataset
 
 - **Source**: [K-FALL Dataset on Kaggle](https://www.kaggle.com/datasets/usmanabbasi2002/kfall-dataset)
 - Downloaded automatically in CI/CD, no manual download needed
-- Processed into trial-based structure expected by train.py
+- Stored in this repository at `dataset/kfall/`
 
 ## Models
 
