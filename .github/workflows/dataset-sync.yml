@@ -51,6 +51,6 @@ jobs:
             echo "No dataset changes to commit"
           else
             git commit -m "chore: add K-FALL dataset (auto-downloaded from Kaggle)"
-            git push origin HEAD:${{ github.ref }}
+            git push origin HEAD:${{ github.ref_name }}
             echo "✓ Dataset uploaded to repository"
           fi
