@@ -13,6 +13,15 @@ jobs:
     timeout-minutes: 60
 
     steps:
+      - name: Validate PAT secret
+        env:
+          REPO_PAT: ${{ secrets.PAT }}
+        run: |
+          if [ -z "${REPO_PAT}" ]; then
+            echo "ERROR: secrets.PAT is not configured."
+            exit 1
+          fi
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -50,7 +59,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No dataset changes to commit"
           else
-            TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-$(git branch --show-current)}}"
+            TARGET_BRANCH="${GITHUB_REF_NAME}"
             if [ -z "${TARGET_BRANCH}" ] || [ "${TARGET_BRANCH}" = "HEAD" ]; then
               echo "ERROR: Unable to resolve target branch for push"
               exit 1
